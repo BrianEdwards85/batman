@@ -1,6 +1,7 @@
 (ns batman.handler
   (:require [compojure.core :refer [GET defroutes]]
             [compojure.route :refer [not-found resources]]
+            [clojure.data.json :as json]
             [hiccup.page :refer [include-js include-css html5]]
             [batman.middleware :refer [wrap-middleware]]
             [config.core :refer [env]]))
@@ -26,11 +27,16 @@
      mount-target
      (include-js "/js/app.js")]))
 
+(defn env-json [r]
+  {:status 200
+   :body (json/write-str env)
+   :headers {"Content-Type" "application/json"}})
+
 
 (defroutes routes
   (GET "/" [] (loading-page))
   (GET "/about" [] (loading-page))
-  
+  (GET "/api/env" [] env-json)
   (resources "/")
   (not-found "Not Found"))
 
